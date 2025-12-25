@@ -5,7 +5,6 @@ app = FastAPI()
 
 @app.get("/cyber", response_class=HTMLResponse)
 async def hacker_dashboard(request: Request):
-    # Real user IP fetch ho raha hai
     client_ip = request.client.host
     return f"""
     <html>
@@ -15,15 +14,14 @@ async def hacker_dashboard(request: Request):
                 body {{ background: black; color: #00ff00; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }}
                 canvas {{ position: fixed; top: 0; left: 0; z-index: -1; }}
                 .container {{ position: relative; z-index: 1; padding: 20px; text-align: center; }}
-                .box {{ border: 2px solid #00ff00; display: inline-block; padding: 25px; background: rgba(0, 15, 0, 0.9); box-shadow: 0 0 20px #00ff00; border-radius: 8px; max-width: 500px; width: 90%; }}
-                .tab-btn {{ background: none; border: 1px solid #00ff00; color: #00ff00; padding: 10px 15px; cursor: pointer; margin: 5px; font-family: monospace; transition: 0.3s; }}
+                .box {{ border: 2px solid #00ff00; display: inline-block; padding: 25px; background: rgba(0, 15, 0, 0.9); box-shadow: 0 0 20px #00ff00; border-radius: 8px; max-width: 500px; width: 90%; margin-top: 40px; }}
+                .tab-btn {{ background: none; border: 1px solid #00ff00; color: #00ff00; padding: 10px 15px; cursor: pointer; margin: 5px; font-family: monospace; }}
                 .active-tab {{ background: #00ff00; color: black; font-weight: bold; }}
-                input {{ background: #000; color: #00ff00; border: 1px solid #00ff00; padding: 12px; width: 80%; outline: none; margin-top: 15px; }}
-                button {{ background: #00ff00; color: black; border: none; padding: 12px 25px; cursor: pointer; font-weight: bold; margin-top: 15px; transition: 0.3s; }}
-                button:hover {{ background: #fff; box-shadow: 0 0 15px #fff; }}
+                input {{ background: #000; color: #00ff00; border: 1px solid #00ff00; padding: 12px; width: 85%; outline: none; margin-top: 15px; }}
+                button {{ background: #00ff00; color: black; border: none; padding: 12px 25px; cursor: pointer; font-weight: bold; margin-top: 15px; }}
                 .footer {{ margin-top: 20px; font-size: 12px; }}
                 .footer a {{ color: #00ff00; text-decoration: none; border-bottom: 1px solid #00ff00; }}
-                #status-log {{ text-align: left; background: rgba(0,0,0,0.5); padding: 10px; margin-top: 15px; border-radius: 5px; font-size: 13px; min-height: 60px; }}
+                #status-log {{ text-align: left; background: rgba(0,0,0,0.5); padding: 10px; margin-top: 15px; border-radius: 5px; font-size: 13px; min-height: 50px; color: cyan; }}
             </style>
         </head>
         <body>
@@ -39,63 +37,50 @@ async def hacker_dashboard(request: Request):
                     <hr color="#00ff00">
 
                     <div id="lock-screen">
-                        <p style="color:red; font-weight:bold; animation: blink 1s infinite;">! ACCESS RESTRICTED !</p>
+                        <p style="color:red; font-weight:bold;">! ACCESS DENIED: UNLOCK REQUIRED !</p>
                         <button onclick="unlockSystem()">FOLLOW @teamwelfare77 TO UNLOCK</button>
                     </div>
 
                     <div id="main-interface" style="display:none;">
                         <button class="tab-btn active-tab" onclick="showTab('osint', this)">OSINT SEARCH</button>
                         <button class="tab-btn" onclick="showTab('network', this)">NETWORK TOOLS</button>
-                        
                         <div id="osint-content">
-                            <h3 style="color: cyan;">PROFILE RECONNAISSANCE</h3>
+                            <h3 style="color: white;">SOCIAL RECONNAISSANCE</h3>
                             <input type="text" id="targetInput" placeholder="Enter Instagram Username..." onkeydown="playType()">
-                            <br><button onclick="executeAction('Scanning Instagram Database...')">EXECUTE INTRUSION</button>
+                            <br><button onclick="executeAction('Scanning Instagram...')">START INTRUSION</button>
                         </div>
-                        
                         <div id="network-content" style="display:none;">
-                            <h3 style="color: cyan;">NETWORK ANALYSIS</h3>
+                            <h3 style="color: white;">NETWORK SCANNER</h3>
                             <input type="text" placeholder="Enter IP Address..." onkeydown="playType()">
-                            <br><button onclick="executeAction('Tracing Route to Target...')">START SCAN</button>
+                            <br><button onclick="executeAction('Scanning Network...')">EXECUTE SCAN</button>
                         </div>
                         <div id="status-log"></div>
                     </div>
-
-                    <div class="footer">
-                        <a href="https://t.me/Charak_777" target="_blank">DEVELOPED BY C4ar4k-X (V4.0)</a>
-                    </div>
+                    <div class="footer"><a href="https://t.me/Charak_777" target="_blank">DEVELOPED BY C4ar4k-X</a></div>
                 </div>
             </div>
 
             <script>
-                // Matrix Rain Effect
                 const canvas = document.getElementById('matrix');
                 const ctx = canvas.getContext('2d');
                 canvas.width = window.innerWidth; canvas.height = window.innerHeight;
                 const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
-                const fontSize = 16;
-                const drops = Array(Math.floor(canvas.width/fontSize)).fill(1);
-                
+                const drops = Array(Math.floor(canvas.width/20)).fill(1);
                 function draw() {{
                     ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.fillStyle = "#0F0"; ctx.font = fontSize + "px monospace";
+                    ctx.fillStyle = "#0F0"; ctx.font = "15px monospace";
                     drops.forEach((y, i) => {{
                         const text = characters.charAt(Math.floor(Math.random() * characters.length));
-                        ctx.fillText(text, i * fontSize, y * fontSize);
-                        if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                        ctx.fillText(text, i * 20, y * 20);
+                        if (y * 20 > canvas.height && Math.random() > 0.975) drops[i] = 0;
                         drops[i]++;
                     }});
                 }}
                 setInterval(draw, 35);
 
-                // Sounds
-                const tSound = document.getElementById('typeSound');
-                const cSound = document.getElementById('clickSound');
+                function playType() {{ document.getElementById('typeSound').play(); }}
+                function playClick() {{ document.getElementById('clickSound').play(); }}
 
-                function playType() {{ tSound.currentTime = 0; tSound.play(); }}
-                function playClick() {{ cSound.currentTime = 0; cSound.play(); }}
-
-                // Logic
                 function unlockSystem() {{
                     playClick();
                     window.open("https://www.instagram.com/teamwelfare77?igsh=d21ia3h6eWJ5Z2lu", "_blank");
@@ -114,10 +99,9 @@ async def hacker_dashboard(request: Request):
                 function executeAction(msg) {{
                     playClick();
                     let log = document.getElementById('status-log');
-                    log.innerHTML = "<span style='color:yellow'>> " + msg + "</span>";
-                    setTimeout(() => {{ log.innerHTML += "<br>> Bypassing Cloudflare Protection..."; }}, 1200);
-                    setTimeout(() => {{ log.innerHTML += "<br>> Fetching Data Packets..."; }}, 2500);
-                    setTimeout(() => {{ log.innerHTML += "<br><span style='color:red'>> ERROR: ACCESS TOKEN EXPIRED. (API KEY REQUIRED)</span>"; }}, 4000);
+                    log.innerHTML = "> " + msg;
+                    setTimeout(() => {{ log.innerHTML += "<br>> Accessing Private Clusters..."; }}, 1500);
+                    setTimeout(() => {{ log.innerHTML += "<br><span style='color:red'>> ERROR: DATABASE CONNECTION FAILED.</span>"; }}, 3000);
                 }}
             </script>
         </body>
