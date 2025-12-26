@@ -98,8 +98,8 @@ async def telegram_webhook(request: Request):
             reply = f"🔍 SCANNING TARGET: {text}\\n\\n✅ SUCCESS: Profile Found\\n🔗 LINK: https://instagram.com/{text}"
             
         async with httpx.AsyncClient() as client:
-            await client.post(f"{BASE_URL}/sendMessage", json={{"chat_id": chat_id, "text": reply}})
-    return {{"status": "ok"}}
+            await client.post(f"{BASE_URL}/sendMessage", json={"chat_id": chat_id, "text": reply})
+    return {"status": "ok"}
 
 # Webhook Setup
 @app.get("/set-webhook")
@@ -111,5 +111,5 @@ async def set_webhook():
 
 @app.get("/")
 async def root():
-    return {{"status": "Online", "system": "C4ar4k-X", "bot": "@C4ar4kX_Bot"}}
+    return {"status": "Online", "system": "C4ar4k-X", "bot": "@C4ar4kX_Bot"}
 
