@@ -7,33 +7,27 @@ from fastapi.responses import HTMLResponse
 
 app = FastAPI()
 
-# ================= CONFIGURATION =================
-TOKEN = "7757973795:AAEx_f7E6G9yV2yv_Xy0p6UshYlqG9N6l_M"
+# === CONFIG (SAB KUCH VERIFIED HAI) ===
+TOKEN = "8369647120:AAE0S7oP9s2hhqMh4b3bGFvKtJaRfIzdgJE"
 BOT_USERNAME = "C4ar4kX_Bot"
-ADMIN_USER = "@Charak_777"
+ADMIN_USER = "Charak_777" 
 UPI_ID = "charak777@ybl"
-
-# NAVEEN'S API (REAL POWER)
-LEAK_API_TOKEN = "NDiqpXCQOnVgfeP5XYEXkt6bGNOYCgGo"
+LEAK_API_TOKEN = "NDiqpXCQOnVgfeP5XYEXkt6bGNOYCgGo" # Naveen's Power API
 LEAK_URL = "https://leakosintapi.com/"
 
-# ================= WELCOME UI =================
-WELCOME_TEXT = f"""
-🛰️ C4AR4K-X GLOBAL INTELLIGENCE 🛰️
-------------------------------------------
-🌐 NODE: Proxy Earth Active
-🛡️ SYSTEM: Dark Web Scraper v4.5
-------------------------------------------
-Bhai, full investigation reports unlock karne ke liye apna plan choose karein:
-
-⚡ STARTER: ₹19 (2 Scans - Trial)
-📅 MONTHLY: ₹199 (Unlimited - 30 Days)
-👑 LIFETIME: ₹699 (Permanent Access)
-
-📌 Payment: {UPI_ID}
-Screenshot {ADMIN_USER} ko bhejien.
-------------------------------------------
-"""
+# === BUTTONS SYSTEM (PROFESSIONAL LOOK) ===
+def get_combined_buttons():
+    return {
+        "inline_keyboard": [
+            [{"text": "💳 Pay for Trial (₹19 Only)", "url": f"https://upilinks.in/payment-button?upi={UPI_ID}&amt=19"}],
+            [{"text": "📞 Contact Admin / Send SS", "url": f"https://t.me/{ADMIN_USER}"}],
+            [{"text": "🔑 Request Activation Key", "url": f"https://t.me/{ADMIN_USER}"}],
+            [
+                {"text": "📢 Telegram", "url": "https://t.me/C4AR4K_X"},
+                {"text": "📸 Instagram", "url": f"https://instagram.com/{ADMIN_USER}"}
+            ]
+        ]
+    }
 
 @app.post("/webhook")
 async def handle_webhook(request: Request):
@@ -41,71 +35,79 @@ async def handle_webhook(request: Request):
     if "message" in data:
         chat_id = data["message"]["chat"]["id"]
         text = data.get("message", {}).get("text", "").strip()
-
+        
         async with httpx.AsyncClient() as client:
             if text == "/start":
+                welcome = (
+                    f"🛰️ C4AR4K-X GLOBAL OSINT TERMINAL\n"
+                    f"------------------------------------------\n"
+                    f"🌐 FOLLOW US: [Telegram](https://t.me/C4AR4K_X) | [Instagram](https://instagram.com/{ADMIN_USER})\n"
+                    f"🛡️ ENCRYPTION: AES-256 (Proxy Earth Active)\n"
+                    f"------------------------------------------\n\n"
+                    f"⚡ INVESTIGATION PLANS:\n"
+                    f"🔹 TRIAL: ₹19 (2 Real Scans)\n"
+                    f"🔹 MONTHLY: ₹199 (Unlimited)\n"
+                    f"🔹 LIFETIME: ₹699 (Permanent Access)\n\n"
+                    f"Target ka Phone Number ya Email bhejien scan karne ke liye."
+                )
                 await client.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", 
-                                 json={"chat_id": chat_id, "text": WELCOME_TEXT, "parse_mode": "Markdown"})
+                                 json={"chat_id": chat_id, "text": welcome, "parse_mode": "Markdown", "disable_web_page_preview": True, "reply_markup": get_combined_buttons()})
             
             elif text.isdigit() or "@" in text:
-                # 1. SCARY ANIMATIONS (Sanki XD Style)
-                animations = [
-                    "🛰️ Connecting to Proxy Earth Node...",
-                    "⛓️ Decrypting Dark-Web SQL Layers... [45%]",
-                    "🎯 Target Found! Scanning Social Media & Images..."
-                ]
-                for msg in animations:
-                    await client.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", json={"chat_id": chat_id, "text": msg})
+                # Scary Animation Sequence (Dark Web Simulation)
+                for s in ["🛰️ Connecting to Proxy Earth Node-01...", "⛓️ Scraping Dark-Web SQL Layers...", "🎯 Target Identified! Fetching Data..."]:
+                    await client.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", json={"chat_id": chat_id, "text": s})
                     await asyncio.sleep(1.2)
 
-                # 2. REAL SEARCH (Naveen API Logic)
+                # NAVEEN'S REAL API CALL
                 payload = {"token": LEAK_API_TOKEN, "request": text, "limit": 5, "lang": "en"}
                 try:
                     api_res = await client.post(LEAK_URL, json=payload, timeout=30.0)
-                    response = api_res.json()
+                    res = api_res.json()
                     
-                    if response.get("List") and response["List"] != {}:
-                        for db, db_data in response["List"].items():
+                    if res.get("List") and res["List"] != {}:
+                        for db, db_data in res["List"].items():
                             for entry in db_data["Data"]:
-                                js_data = json.dumps(entry, indent=2)
-                                report = (
-                                    f"🛰️ C4AR4K-X INTELLIGENCE REPORT\n"
-                                    f"---------------------------------------\n"
-                                    f"📂 Source: Proxy Earth / Dark Web Node\n"
-                                    f"👤 Social Media: Identified\n"
-                                    f"📸 Profile Pic: Found in Leak\n\n"
-                                    f"js\n{js_data}\n"
-                                )
-                                await client.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", 
-                                                 json={"chat_id": chat_id, "text": report, "parse_mode": "Markdown"})
+                                report = f"🛰️ DATA FOUND IN: {db}\n---\njs\n{json.dumps(entry, indent=2)}\n"
+                                await client.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", json={"chat_id": chat_id, "text": report, "parse_mode": "Markdown"})
                         
-                        # 3. PAYMENT HOOK
                         await client.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", 
-                                         json={"chat_id": chat_id, "text": f"✅ Social Media ID & High-Res Pics Locked. Pay ₹199 to {ADMIN_USER} to unlock full profile.", "parse_mode": "Markdown"})
+                                         json={"chat_id": chat_id, "text": "✅ Social Media IDs & Full Report Locked.\nPay ₹199 to unlock all sensitive data and high-res pics.", "reply_markup": get_combined_buttons()})
                     else:
-                        await client.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", json={"chat_id": chat_id, "text": "❌ No data found in Dark Web database."})
-                except:
-                    await client.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", json={"chat_id": chat_id, "text": "⚠️ Proxy Earth connection timeout. Try again."})
+                        await client.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", json={"chat_id": chat_id, "text": "❌ No data found in our 2025 Deep-Web records."})
+                except Exception:
+                    await client.post(f"https://api.telegram.org/bot{TOKEN}/sendMessage", json={"chat_id": chat_id, "text": "⚠️ Proxy Node timeout. Try again later."})
+
     return {"status": "ok"}
 
-# ================= WEBSITE WITH IP TRACKER =================
+# === WEB TERMINAL (MATRIX EFFECT + IP TRACKER) ===
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    user_ip = request.headers.get("x-forwarded-for") or request.client.host
+    ip = request.headers.get("x-forwarded-for") or request.client.host
     return f"""
-    <html>
-    <head><title>C4AR4K-X TERMINAL</title></head>
-    <body style="background:#000;color:#0f0;text-align:center;font-family:monospace;padding:30px;">
-        <h1 style="text-shadow: 0 0 10px #0f0;">🛰️ C4AR4K-X OSINT SYSTEM</h1>
-        <div style="border:1px solid #0f0; padding:15px; display:inline-block; margin:20px;">
-            <p style="color:red;">[!] WARNING: ACCESS LOGGED</p>
-            <p>VISITOR IP: {user_ip}</p>
-            <p>PROXY NODE: ACTIVE</p>
-        </div><br>
-        <iframe src="https://cybermap.kaspersky.com/en/widget/v2" width="90%" height="450px" style="border:1px solid #0f0;"></iframe><br><br>
-        <a href="https://t.me/{BOT_USERNAME}" style="background:#0f0;color:#000;padding:20px 40px;text-decoration:none;font-weight:bold;box-shadow: 0 0 20px #0f0;">🚀 LAUNCH OSINT SCANNER</a>
-    </body>
-    </html>
+    <html><body style="background:#000;color:#0f0;text-align:center;font-family:monospace;overflow:hidden;margin:0;">
+        <canvas id="m"></canvas>
+        <div style="position:absolute;width:100%;top:20%;z-index:1;">
+            <h1 style="text-shadow:0 0 10px #0f0;font-size:3em;">🛰️ C4AR4K-X OSINT</h1>
+            <div style="border:1px solid #0f0;padding:20px;display:inline-block;background:rgba(0,0,0,0.85);">
+                <p style="color:red; font-weight:bold;">[!] YOUR IP: {ip}</p>
+                <p>STATUS: SYSTEM LOGGING ACTIVE | ACCESS: LOGGED</p>
+            </div><br><br>
+            <a href="https://t.me/{BOT_USERNAME}" style="background:#0f0;color:#000;padding:20px 40px;text-decoration:none;font-weight:bold;box-shadow:0 0 20px #0f0;border-radius:5px;">🚀 LAUNCH OSINT SCANNER</a>
+        </div>
+        <script>
+            const c=document.getElementById('m');const x=c.getContext('2d');
+            c.width=window.innerWidth;c.height=window.innerHeight;
+            const d=Array(Math.floor(c.width/16)).fill(1);
+            setInterval(()=>{{
+                x.fillStyle="rgba(0,0,0,0.05)";x.fillRect(0,0,c.width,c.height);
+                x.fillStyle="#0f0";d.forEach((y,i)=>{{
+                    x.fillText(String.fromCharCode(48+Math.random()*70),i*16,y*16);
+                    if(y*16>c.height&&Math.random()>0.95)d[i]=0;d[i]++;
+                }});
+            }},35);
+        </script>
+    </body></html>
     """
 
 @app.get("/set-webhook")
