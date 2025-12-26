@@ -112,3 +112,4 @@ async def set_webhook():
 @app.get("/")
 async def root():
     return {{"status": "Online", "system": "C4ar4k-X", "bot": "@C4ar4kX_Bot"}}
+
