@@ -4,3 +4,4 @@ slowapi
 python-dotenv
 psutil
 httpx
+python-telegram-bot

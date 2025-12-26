@@ -1,62 +1,49 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
+import httpx
+import os
 
 app = FastAPI()
 
+# --- CONFIGURATION ---
+BOT_TOKEN = "8369647120:AAE0S7oP9s2hhqMh4b3bGFvKtJaRfIzdgJE"
+BASE_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
+
+# --- 1. ADVANCED WEB/APP DASHBOARD ---
 @app.get("/cyber", response_class=HTMLResponse)
 async def hacker_dashboard(request: Request):
     client_ip = request.client.host
     return f"""
     <html>
         <head>
-            <title>C4ar4k-X | OSINT SYSTEM</title>
+            <title>C4ar4k-X | OSINT PRO</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
             <style>
                 body {{ background: black; color: #00ff00; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; }}
                 canvas {{ position: fixed; top: 0; left: 0; z-index: -1; }}
-                .container {{ position: relative; z-index: 1; padding: 20px; text-align: center; }}
-                .box {{ border: 2px solid #00ff00; display: inline-block; padding: 25px; background: rgba(0, 15, 0, 0.9); box-shadow: 0 0 20px #00ff00; border-radius: 8px; max-width: 500px; width: 90%; margin-top: 40px; }}
-                .tab-btn {{ background: none; border: 1px solid #00ff00; color: #00ff00; padding: 10px 15px; cursor: pointer; margin: 5px; font-family: monospace; }}
-                .active-tab {{ background: #00ff00; color: black; font-weight: bold; }}
-                input {{ background: #000; color: #00ff00; border: 1px solid #00ff00; padding: 12px; width: 85%; outline: none; margin-top: 15px; }}
-                button {{ background: #00ff00; color: black; border: none; padding: 12px 25px; cursor: pointer; font-weight: bold; margin-top: 15px; }}
-                .footer {{ margin-top: 20px; font-size: 12px; }}
-                .footer a {{ color: #00ff00; text-decoration: none; border-bottom: 1px solid #00ff00; }}
-                #status-log {{ text-align: left; background: rgba(0,0,0,0.5); padding: 10px; margin-top: 15px; border-radius: 5px; font-size: 13px; min-height: 50px; color: cyan; }}
+                .container {{ position: relative; z-index: 1; padding: 15px; text-align: center; }}
+                .box {{ border: 2px solid #00ff00; display: inline-block; padding: 25px; background: rgba(0, 10, 0, 0.9); box-shadow: 0 0 20px #00ff00; border-radius: 10px; width: 90%; max-width: 450px; margin-top: 30px; }}
+                input {{ background: #000; color: #00ff00; border: 1px solid #00ff00; padding: 15px; width: 90%; outline: none; margin-top: 15px; font-size: 16px; }}
+                button {{ background: #00ff00; color: black; border: none; padding: 15px; cursor: pointer; font-weight: bold; margin-top: 15px; width: 90%; font-size: 16px; }}
+                #log {{ margin-top: 20px; text-align: left; font-size: 14px; min-height: 100px; color: #0f0; padding: 10px; border-top: 1px solid #004400; }}
+                .access-granted {{ color: #00ff00; border: 1px solid #0f0; padding: 5px; margin-top: 5px; display: block; background: rgba(0,255,0,0.1); }}
             </style>
         </head>
         <body>
             <canvas id="matrix"></canvas>
             
-            <audio id="typeSound"><source src="https://www.soundjay.com/communication/typing-on-computer-keyboard-1.mp3" type="audio/mpeg"></audio>
-            <audio id="clickSound"><source src="https://www.soundjay.com/buttons/button-20.mp3" type="audio/mpeg"></audio>
+            <audio id="typeSound"><source src="https://www.soundjay.com/communication/typing-on-computer-keyboard-1.mp3"></audio>
+            <audio id="accessSound"><source src="https://www.soundjay.com/buttons/button-20.mp3"></audio>
 
             <div class="container">
                 <div class="box">
-                    <h1 style="text-shadow: 0 0 10px #0F0;">[ C4ar4k-X OSINT SYSTEM ]</h1>
-                    <p style="color: yellow; font-size: 14px;">TARGET IP: {client_ip} | OWNER: @Charak_777</p>
-                    <hr color="#00ff00">
-
-                    <div id="lock-screen">
-                        <p style="color:red; font-weight:bold;">! ACCESS DENIED: UNLOCK REQUIRED !</p>
-                        <button onclick="unlockSystem()">FOLLOW @teamwelfare77 TO UNLOCK</button>
-                    </div>
-
-                    <div id="main-interface" style="display:none;">
-                        <button class="tab-btn active-tab" onclick="showTab('osint', this)">OSINT SEARCH</button>
-                        <button class="tab-btn" onclick="showTab('network', this)">NETWORK TOOLS</button>
-                        <div id="osint-content">
-                            <h3 style="color: white;">SOCIAL RECONNAISSANCE</h3>
-                            <input type="text" id="targetInput" placeholder="Enter Instagram Username..." onkeydown="playType()">
-                            <br><button onclick="executeAction('Scanning Instagram...')">START INTRUSION</button>
-                        </div>
-                        <div id="network-content" style="display:none;">
-                            <h3 style="color: white;">NETWORK SCANNER</h3>
-                            <input type="text" placeholder="Enter IP Address..." onkeydown="playType()">
-                            <br><button onclick="executeAction('Scanning Network...')">EXECUTE SCAN</button>
-                        </div>
-                        <div id="status-log"></div>
-                    </div>
-                    <div class="footer"><a href="https://t.me/Charak_777" target="_blank">DEVELOPED BY C4ar4k-X</a></div>
+                    <h2 style="text-shadow: 0 0 10px #0f0;">[ C4ar4k-X OSINT SYSTEM ]</h2>
+                    <p style="font-size: 12px; color: yellow;">IP: {client_ip} | OWNER: @Charak_777</p>
+                    
+                    <input type="text" id="target" placeholder="Enter Target Username..." oninput="document.getElementById('typeSound').play()">
+                    <button onclick="runSearch()">EXECUTE DEEP SEARCH</button>
+                    
+                    <div id="log">> System Ready... Enter Target Data.</div>
                 </div>
             </div>
 
@@ -64,7 +51,7 @@ async def hacker_dashboard(request: Request):
                 const canvas = document.getElementById('matrix');
                 const ctx = canvas.getContext('2d');
                 canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-                const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*";
+                const characters = "0101XYZ@#$%&*";
                 const drops = Array(Math.floor(canvas.width/20)).fill(1);
                 function draw() {{
                     ctx.fillStyle = "rgba(0, 0, 0, 0.05)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -78,32 +65,50 @@ async def hacker_dashboard(request: Request):
                 }}
                 setInterval(draw, 35);
 
-                function playType() {{ document.getElementById('typeSound').play(); }}
-                function playClick() {{ document.getElementById('clickSound').play(); }}
-
-                function unlockSystem() {{
-                    playClick();
-                    window.open("https://www.instagram.com/teamwelfare77?igsh=d21ia3h6eWJ5Z2lu", "_blank");
-                    document.getElementById('lock-screen').style.display = 'none';
-                    document.getElementById('main-interface').style.display = 'block';
-                }}
-
-                function showTab(tab, btn) {{
-                    playClick();
-                    document.getElementById('osint-content').style.display = (tab === 'osint') ? 'block' : 'none';
-                    document.getElementById('network-content').style.display = (tab === 'network') ? 'block' : 'none';
-                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-tab'));
-                    btn.classList.add('active-tab');
-                }}
-
-                function executeAction(msg) {{
-                    playClick();
-                    let log = document.getElementById('status-log');
-                    log.innerHTML = "> " + msg;
-                    setTimeout(() => {{ log.innerHTML += "<br>> Accessing Private Clusters..."; }}, 1500);
-                    setTimeout(() => {{ log.innerHTML += "<br><span style='color:red'>> ERROR: DATABASE CONNECTION FAILED.</span>"; }}, 3000);
+                function runSearch() {{
+                    let target = document.getElementById('target').value;
+                    let log = document.getElementById('log');
+                    if(!target) return;
+                    
+                    document.getElementById('accessSound').play();
+                    log.innerHTML = "> Scanning Network Nodes for: " + target;
+                    
+                    setTimeout(() => {{ log.innerHTML += "<br>> Bypassing Social Firewall..."; }}, 1000);
+                    setTimeout(() => {{ 
+                        log.innerHTML += "<br><span class='access-granted'>[ PROFILE DISCOVERED ]<br>Link: <a href='https://instagram.com/"+target+"' target='_blank' style='color:white;'>instagram.com/"+target+"</a></span>"; 
+                    }}, 2500);
                 }}
             </script>
         </body>
     </html>
     """
+
+# --- 2. TELEGRAM BOT ENGINE ---
+@app.post("/webhook")
+async def telegram_webhook(request: Request):
+    data = await request.json()
+    if "message" in data:
+        chat_id = data["message"]["chat"]["id"]
+        text = data["message"].get("text", "")
+        
+        if text == "/start":
+            reply = "Welcome to C4ar4k-X OSINT System!\\n\\nSend any Instagram username to fetch real-time data."
+        else:
+            # Real Link Generation
+            reply = f"🔍 SCANNING TARGET: {text}\\n\\n✅ SUCCESS: Profile Found\\n🔗 LINK: https://instagram.com/{text}"
+            
+        async with httpx.AsyncClient() as client:
+            await client.post(f"{BASE_URL}/sendMessage", json={{"chat_id": chat_id, "text": reply}})
+    return {{"status": "ok"}}
+
+# Webhook Setup
+@app.get("/set-webhook")
+async def set_webhook():
+    webhook_url = "https://welfare-intelligence-api.onrender.com/webhook"
+    async with httpx.AsyncClient() as client:
+        r = await client.get(f"{BASE_URL}/setWebhook?url={webhook_url}")
+    return r.json()
+
+@app.get("/")
+async def root():
+    return {{"status": "Online", "system": "C4ar4k-X", "bot": "@C4ar4kX_Bot"}}
