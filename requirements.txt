@@ -1,7 +1,7 @@
 fastapi
 uvicorn
-slowapi
-python-dotenv
-psutil
 httpx
+python-dotenv
+slowapi
+psutil
 python-telegram-bot
