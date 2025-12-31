@@ -7,6 +7,7 @@ app = FastAPI()
 # ================= [1. CONFIGURATION BLOCK] =================
 TOKEN_A = "8488837085:AAGD9g2k_rT_i046HD3q3vBaKWguR18QFiM" # Finance Bot
 TOKEN_B = "8369647120:AAE0S7oP9s2hhqMh4b3bGFvKtJaRfIzdgJE" # Scanner Bot
+TOKEN_C = "7813703642:AAFr14sO4o5HVQPFtUcx639rO29ievQwWDQ" # OSINT Terminal Bot
 ADMIN_USER_ID = "7856837434"
 UPI_ID = "charak777@ybl"
 
@@ -68,8 +69,40 @@ async def scanner_bot(request: Request):
             ]}
             await send_msg(TOKEN_B, chat_id, msg, markup)
     return {"ok": True}
+# ================= [3. BOT C: THE EXECUTIONER / OSINT TERMINAL] =================
+@app.post("/webhook_c")
+async def executioner_bot(request: Request):
+    data = await request.json()
+    if "message" in data:
+        chat_id = data["message"]["chat"]["id"]
+        text = data["message"].get("text", "")
 
+        if text == "/start":
+            msg = "📡 *CHARAK-X: MASTER TERMINAL\n\nStatus: CONNECTED\nDatabase: HiTeckGroop_2025\n\nAccess ke liye apni **Premium Key* yahan paste karein."
+            await send_msg(TOKEN_C, chat_id, msg)
+        
+        elif text.startswith("CHX-"):
+            await send_msg(TOKEN_C, chat_id, "🔐 *Key Verified.* Access Granted.\n\nAb aap 10-digit mobile number bhej kar deep search kar sakte hain.")
+            
+        elif text.isdigit() and len(text) == 10:
+            await send_msg(TOKEN_C, chat_id, f"🔍 *Searching HiTeckGroop Database for {text}...*")
+            await asyncio.sleep(2)
+            
+            report = (f"📑 *HITECK DB REPORT FOUND*\n"
+                      f"--------------------------------\n"
+                      f"👤 *Name:* [VERIFIED IN LEAK]\n"
+                      f"👴 *Father's Name:* [MATCHED]\n"
+                      f"🏠 *Adres:* s/o [ENCRYPTED DATA]\n"
+                      f"✅ *Source:* 💾 HiTeckGroop.in Verified\n"
+                      f"--------------------------------\n"
+                      f"⚠️ Full PDF report ke liye Admin @Charak_777 se contact karein.")
+            
+            markup = {"inline_keyboard": [[{"text": "📥 Download Full Data", "url": "https://t.me/Charak_777"}]]}
+            await send_msg(TOKEN_C, chat_id, report, markup)
+
+    return {"ok": True}
 # ================= [3. BOT A: FINANCE & AUTO-APPROVAL] =================
+# ================= [BOT A: FINANCE & AUTO-APPROVAL] =================
 @app.post("/webhook_a")
 async def finance_bot(request: Request):
     data = await request.json()
@@ -77,36 +110,51 @@ async def finance_bot(request: Request):
         chat_id = data["message"]["chat"]["id"]
         user_text = data["message"].get("text", "")
 
-        if user_text == "/start":
-            pay_msg = f"⚡ *CHARAK-X PREMIUM ACCESS\n\nPlan: ₹19 / Lifetime\nUPI ID: {UPI_ID}\n\nPayment ke baad **12-digit UTR ID* yahan likh kar bhein."
-            await send_msg(TOKEN_A, chat_id, pay_msg)
-            
-        elif len(user_text) == 12 and user_text.isdigit():
-            # User confirmation
-            await send_msg(TOKEN_A, chat_id, "⏳ *UTR RECEIVED.*\nAdmin verification ke baad aapki Key bhej di jayegi.")
-            # Admin Approval Shortcut
-            admin_btn = {"inline_keyboard": [[{"text": "✅ APPROVE & SEND KEY", "callback_data": f"app_{chat_id}"}]]}
-            await send_msg(TOKEN_A, ADMIN_USER_ID, f"💰 *Payment Claim!*\nUser: {chat_id}\nUTR: {user_text}", admin_btn)
-            
-        elif user_text.startswith("/approve") and str(chat_id) == ADMIN_USER_ID:
+        # 1. Admin Approval Logic
+        if user_text.startswith("/approve") and str(chat_id) == ADMIN_USER_ID:
             try:
-                target = user_text.split(" ")[1]
+                target_id = user_text.split(" ")[1]
                 key = generate_key()
-                await send_msg(TOKEN_A, target, f"✅ *VERIFIED!*\n\nYour Access Key: {key}\nSystem: ACTIVE")
+                msg = f"✅ *PAYMENT VERIFIED!\n\nYour Key: {key}\n\n👇 **Niche button par click karke OSINT Terminal mein enter karein.*"
+                markup = {"inline_keyboard": [[{"text": "🚀 LAUNCH TERMINAL", "url": "https://t.me/C4ar4k_Scanner_Bot"}]]}
+                await send_msg(TOKEN_A, target_id, msg, markup)
+                return {"ok": True}
             except: pass
-        else:
-            if str(chat_id) != ADMIN_USER_ID:
-                await send_msg(TOKEN_A, ADMIN_USER_ID, f"📩 *Message from {chat_id}:*\n{user_text}")
 
+        # # 2. Start Message for Users (Updated with 3 Plans)
+        elif user_text == "/start":
+            pay_msg = (
+                "🛡️ *CHARAK-X PREMIUM ACCESS HUB*\n\n"
+                "Aapka swagat hai! Niche diye gaye plans mein se apna option chunein:\n\n"
+                "1️⃣ *Trial Access* - ₹19 (Single Search)\n"
+                "2️⃣ *Monthly Pro* - ₹199 (Unlimited for 30 Days)\n"
+                "3️⃣ *Lifetime Elite* - ₹699 (Permanent Access)\n\n"
+                f"📌 *Payment UPI ID:* {UPI_ID}\n\n"
+                "⚠️ Payment karne ke baad 12-digit UTR number yahan bhejien."
+            )
+            markup = {"inline_keyboard": [
+                [{"text": "💳 Pay ₹19 (Trial)", "url": f"t.me/Charak_777"}],
+                [{"text": "🚀 Pay ₹199 (Monthly)", "url": f"t.me/Charak_777"}],
+                [{"text": "👑 Pay ₹699 (Lifetime)", "url": f"t.me/Charak_777"}]
+            ]}
+            await send_msg(TOKEN_A, chat_id, pay_msg, markup)
+        # 3. UTR Receiving Logic
+        elif len(user_text) == 12 and user_text.isdigit():
+            await send_msg(TOKEN_A, chat_id, "⌛ UTR RECEIVED. Verification ke baad Key bhej di jayegi.")
+            admin_btn = {"inline_keyboard": [[{"text": "✅ APPROVE", "callback_data": f"app_{chat_id}"}]]}
+            await send_msg(TOKEN_A, ADMIN_USER_ID, f"💰 Payment Claim!\nUser: {chat_id}\nUTR: {user_text}", admin_btn)
+
+    # 4. Callback Query (Button click handle karne ke liye)
     elif "callback_query" in data:
         cb_data = data["callback_query"]["data"]
         if cb_data.startswith("app_"):
             target_id = cb_data.split("_")[1]
             key = generate_key()
-            await send_msg(TOKEN_A, target_id, f"✅ *PAYMENT VERIFIED!*\n\nWelcome. Your Key: {key}")
-            await send_msg(TOKEN_A, ADMIN_USER_ID, f"Success! Key sent to {target_id}")
-    return {"ok": True}
+            msg = f"✅ *PAYMENT VERIFIED!*\n\nYour Key: {key}\n\n🚀 Terminal Launch karein: https://t.me/C4ar4k_Scanner_Bot"
+            await send_msg(TOKEN_A, target_id, msg)
+            await send_msg(TOKEN_A, ADMIN_USER_ID, f"🟢 Approved for: {target_id}")
 
+    return {"ok": True}
 # ================= [4. WEBPAGE: INTEL DASHBOARD] =================
 @app.get("/", response_class=HTMLResponse)
 async def home():
