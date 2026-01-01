@@ -54,7 +54,7 @@ async def scanner_bot(request: Request):
         if cb_data == "menu":
             msg = "💻 *CHARAK-X TERMINAL CONSOLE*\n\nModules Loaded:\n1. OSINT Scanner (Active)\n2. Social Links (Connected)\n3. Database (Standby)"
             markup = {"inline_keyboard": [
-                [{"text": "🔍 Launch OSINT Tool", "url": "https://t.me/C4ar4k2_Bot"}],
+                [{"text": "🔍 Launch OSINT Tool", "url": "https://t.me/Charak_osint_bot"}],
                 [{"text": "📱 System Socials", "callback_data": "socials"}]
             ]}
             await send_msg(TOKEN_B, chat_id, msg, markup)
@@ -110,47 +110,42 @@ async def finance_bot(request: Request):
         chat_id = data["message"]["chat"]["id"]
         user_text = data["message"].get("text", "")
 
-        # 1. Admin Approval Logic
+        # 1. Admin Approval Logic (Direct command)
         if user_text.startswith("/approve") and str(chat_id) == ADMIN_USER_ID:
             try:
                 target_id = user_text.split(" ")[1]
                 key = generate_key()
-                msg = f"✅ *PAYMENT VERIFIED!\n\nYour Key: {key}\n\n👇 **Niche button par click karke OSINT Terminal mein enter karein.*"
-                markup = {"inline_keyboard": [[{"text": "🚀 LAUNCH TERMINAL", "url": "https://t.me/C4ar4k_Scanner_Bot"}]]}
+                msg = f"✅ PAYMENT VERIFIED!\n\nYour Key: {key}\n\n👇 *Niche button par click karke OSINT Terminal mein enter karein.*"
+                markup = {"inline_keyboard": [[{"text": "🚀 LAUNCH TERMINAL", "url": "https://t.me/Charak_osint_bot"}]]}
                 await send_msg(TOKEN_A, target_id, msg, markup)
                 return {"ok": True}
             except: pass
 
-        # # 2. Start Message for Users (Updated with 3 Plans)
+        # 2. Start Message with 3 Plans
         elif user_text == "/start":
             pay_msg = (
                 "🛡️ *CHARAK-X PREMIUM ACCESS HUB*\n\n"
-                "Aapka swagat hai! Niche diye gaye plans mein se apna option chunein:\n\n"
-                "1️⃣ *Trial Access* - ₹19 (Single Search)\n"
-                "2️⃣ *Monthly Pro* - ₹199 (Unlimited for 30 Days)\n"
-                "3️⃣ *Lifetime Elite* - ₹699 (Permanent Access)\n\n"
-                f"📌 *Payment UPI ID:* {UPI_ID}\n\n"
-                "⚠️ Payment karne ke baad 12-digit UTR number yahan bhejien."
+                "1️⃣ *Trial Access* - ₹19\n"
+                "2️⃣ *Monthly Pro* - ₹199\n"
+                "3️⃣ *Lifetime Elite* - ₹699\n\n"
+                f"📌 *UPI ID:* {UPI_ID}\n"
+                "⚠️ Payment ke baad 12-digit UTR number yahan bhein."
             )
-            markup = {"inline_keyboard": [
-                [{"text": "💳 Pay ₹19 (Trial)", "url": f"t.me/Charak_777"}],
-                [{"text": "🚀 Pay ₹199 (Monthly)", "url": f"t.me/Charak_777"}],
-                [{"text": "👑 Pay ₹699 (Lifetime)", "url": f"t.me/Charak_777"}]
-            ]}
-            await send_msg(TOKEN_A, chat_id, pay_msg, markup)
+            await send_msg(TOKEN_A, chat_id, pay_msg)
+
         # 3. UTR Receiving Logic
         elif len(user_text) == 12 and user_text.isdigit():
             await send_msg(TOKEN_A, chat_id, "⌛ UTR RECEIVED. Verification ke baad Key bhej di jayegi.")
             admin_btn = {"inline_keyboard": [[{"text": "✅ APPROVE", "callback_data": f"app_{chat_id}"}]]}
             await send_msg(TOKEN_A, ADMIN_USER_ID, f"💰 Payment Claim!\nUser: {chat_id}\nUTR: {user_text}", admin_btn)
 
-    # 4. Callback Query (Button click handle karne ke liye)
+    # 4. Callback Query (Auto-Approve Button)
     elif "callback_query" in data:
         cb_data = data["callback_query"]["data"]
         if cb_data.startswith("app_"):
             target_id = cb_data.split("_")[1]
             key = generate_key()
-            msg = f"✅ *PAYMENT VERIFIED!*\n\nYour Key: {key}\n\n🚀 Terminal Launch karein: https://t.me/C4ar4k_Scanner_Bot"
+            msg = f"✅ PAYMENT VERIFIED!\n\nYour Key: {key}\n\n🚀 Terminal Launch karein: https://t.me/Charak_osint_bot"
             await send_msg(TOKEN_A, target_id, msg)
             await send_msg(TOKEN_A, ADMIN_USER_ID, f"🟢 Approved for: {target_id}")
 
