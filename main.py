@@ -54,7 +54,7 @@ async def scanner_bot(request: Request):
         if cb_data == "menu":
             msg = "💻 *CHARAK-X TERMINAL CONSOLE*\n\nModules Loaded:\n1. OSINT Scanner (Active)\n2. Social Links (Connected)\n3. Database (Standby)"
             markup = {"inline_keyboard": [
-                [{"text": "🔍 Launch OSINT Tool", "url": "https://t.me/Charak_osint_bot"}],
+                [{"text": "🔍 Launch OSINT Tool", "url": "https://t.me/C4ar4k2_Bot"}],
                 [{"text": "📱 System Socials", "callback_data": "socials"}]
             ]}
             await send_msg(TOKEN_B, chat_id, msg, markup)
